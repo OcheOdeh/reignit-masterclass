@@ -1,8 +1,11 @@
 import streamlit as st
 import pandas as pd
+import extra_streamlit_components as stx
+import json
+import time
 
 # Set page config
-st.set_page_config(layout="wide", page_title="Masterclass - Sovereign Console", page_icon="🎓")
+st.set_page_config(layout="wide", page_title="Masterclass - Sovereign Console", page_icon="logo.png")
 
 # Load Custom CSS
 def local_css(file_name):
@@ -10,6 +13,13 @@ def local_css(file_name):
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
 local_css("style.css")
+
+# --- COOKIE MANAGER ---
+@st.cache_resource(experimental_allow_widgets=True)
+def get_manager():
+    return stx.CookieManager()
+
+cookie_manager = get_manager()
 
 # --- DATA ---
 COURSE_CONTENT = {
@@ -37,30 +47,56 @@ COURSE_CONTENT = {
     ]
 }
 
-# Flatten content for easier navigation
+# Flatten content
 FLATTENED_LESSONS = []
 for module, lessons in COURSE_CONTENT.items():
     for lesson in lessons:
         FLATTENED_LESSONS.append({"module": module, "title": lesson})
 
-# --- SESSION STATE ---
+# --- STATE SYNC ---
+# Try load from cookies if session state is empty
+cookies = cookie_manager.get_all()
+
 if 'current_lesson_index' not in st.session_state:
-    st.session_state.current_lesson_index = 0
+    saved_index = cookies.get('current_lesson_index')
+    st.session_state.current_lesson_index = int(saved_index) if saved_index else 0
 
 if 'completed_lessons' not in st.session_state:
-    st.session_state.completed_lessons = set()
+    saved_completed = cookies.get('completed_lessons')
+    if saved_completed:
+        try:
+            st.session_state.completed_lessons = set(json.loads(saved_completed))
+        except:
+             st.session_state.completed_lessons = set()
+    else:
+        st.session_state.completed_lessons = set()
 
 # --- NAVIGATION FUNCTIONS ---
+def save_state():
+    cookie_manager.set('current_lesson_index', st.session_state.current_lesson_index, key="set_idx")
+    # Convert set to list for JSON serialization
+    completed_list = list(st.session_state.completed_lessons)
+    cookie_manager.set('completed_lessons', json.dumps(completed_list), key="set_completed")
+
 def next_lesson():
     if st.session_state.current_lesson_index < len(FLATTENED_LESSONS) - 1:
         st.session_state.current_lesson_index += 1
+        save_state()
 
 def prev_lesson():
     if st.session_state.current_lesson_index > 0:
         st.session_state.current_lesson_index -= 1
+        save_state()
 
 def complete_lesson():
     st.session_state.completed_lessons.add(st.session_state.current_lesson_index)
+    save_state()
+    # Force reload to update cookies visually if needed (stx sometimes needs it)
+    # time.sleep(0.1) 
+
+def jump_to_lesson(idx):
+    st.session_state.current_lesson_index = idx
+    save_state()
 
 # --- UI LAYOUT ---
 # Create two columns to mimic the "Card" layout
@@ -71,13 +107,9 @@ progress_pct = len(st.session_state.completed_lessons) / len(FLATTENED_LESSONS)
 
 with left_col:
     st.markdown("### Profile")
-    # Placeholder Avatar
-    st.markdown("""
-    <div style="text-align: center;">
-        <div style="width: 80px; height: 80px; background-color: #ddd; border-radius: 50%; margin: 0 auto 10px auto; display: flex; align-items: center; justify-content: center; font-size: 24px;">👤</div>
-        <h3>Reignit User</h3>
-    </div>
-    """, unsafe_allow_html=True)
+    # Logo
+    st.image("logo.png", width=100)
+    st.markdown("### Reignit, AI Vanguard")
     
     # Navigation Buttons
     c1, c2 = st.columns(2)
@@ -115,7 +147,7 @@ with left_col:
             # Ideally, these would be buttons or clickable links using a component like streamlit-aggrid or just buttons.
             # Using buttons with custom key to avoid duplicates
             if st.button(f"{marker} {lesson.split(': ')[0]}", key=lesson, help=lesson,  use_container_width=True):
-                 st.session_state.current_lesson_index = lesson_idx
+                 jump_to_lesson(lesson_idx)
                  st.rerun()
 
 with right_col:

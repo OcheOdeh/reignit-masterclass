@@ -1,79 +1,133 @@
 /* Main background */
 .stApp {
-    background-color: #050505;
-    color: #ffffff;
+    background-color: #ffffff;
+    color: #000000;
     font-family: 'Inter', sans-serif;
 }
 
 /* Hide default elements */
-header {visibility: hidden;}
-footer {visibility: hidden;}
-#MainMenu {visibility: hidden;}
+header {
+    visibility: hidden;
+}
+
+footer {
+    visibility: hidden;
+}
+
+#MainMenu {
+    visibility: hidden;
+}
 
 /* Custom Card Style for Columns */
 div[data-testid="column"] {
-    background-color: #ffffff;
+    background-color: #f8f9fa;
+    /* Light grey for cards */
     border-radius: 15px;
     padding: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     color: #000000;
-    height: 100%; /* Try to fill height */
+    height: 100%;
+    border: 1px solid #e0e0e0;
 }
 
 /* Typography inside cards */
-div[data-testid="column"] h1, 
-div[data-testid="column"] h2, 
-div[data-testid="column"] h3, 
-div[data-testid="column"] p, 
-div[data-testid="column"] li, 
-div[data-testid="column"] div {
+h1,
+h2,
+h3,
+p,
+li,
+div {
     color: #000000 !important;
 }
 
 /* Buttons */
-.stButton > button {
+.stButton>button {
     width: 100%;
     border-radius: 8px;
     font-weight: 600;
-    border: 1px solid #e0e0e0;
-    transition: all 0.3s ease;
-}
-
-/* Primary Button (Next) */
-div[data-testid="column"]:nth-of-type(1) button:last-child {
-    background-color: #0033cc;
-    color: white;
     border: none;
-}
-div[data-testid="column"]:nth-of-type(1) button:last-child:hover {
-    background-color: #002299;
+    transition: all 0.3s ease;
+    background-color: #0066ff;
+    /* Blue */
+    color: white !important;
 }
 
-/* Secondary Button (Previous) */
-div[data-testid="column"]:nth-of-type(1) button:first-child {
-    background-color: #ffffff;
-    color: #000000;
+.stButton>button:hover {
+    background-color: #0052cc;
+    box-shadow: 0 2px 5px rgba(0, 102, 255, 0.3);
 }
+
+/* Secondary Button (Previous) - make it distinct or just same blue? User said "clickable button use blue" */
+/* We can keep one style for simplicity or make Previous slightly different */
+div[data-testid="column"]:nth-of-type(1) button:first-child {
+    background-color: #e6f0ff;
+    color: #0066ff !important;
+}
+
 div[data-testid="column"]:nth-of-type(1) button:first-child:hover {
-    background-color: #f5f5f5;
+    background-color: #cce0ff;
 }
 
 /* Progress Bar */
-.stProgress > div > div > div > div {
-    background-color: #000000; 
+.stProgress>div>div>div>div {
+    background-color: #d900ff;
+    /* Purple dab */
+    background-image: linear-gradient(to right, #0066ff, #d900ff);
 }
 
-/* Navigation Links in Left Column */
+/* Sidebar Styling - Making it match the white theme */
+[data-testid="stSidebar"] {
+    background-color: #ffffff;
+    border-right: 1px solid #eee;
+}
+
+/* Sidebar Navigation Links */
 .nav-active {
-    background-color: #f0f4ff;
-    color: #0033cc !important;
+    background-color: #f0f7ff;
+    color: #0066ff !important;
     font-weight: bold;
-    border-left: 3px solid #0033cc;
+    border-left: 3px solid #d900ff;
+    /* Purple Accent */
     padding-left: 10px;
+    border-radius: 0 5px 5px 0;
 }
 
 .nav-item {
     padding: 5px 0;
     cursor: pointer;
-    color: #333333;
+    color: #555555;
+}
+
+/* Sidebar Buttons (Lessons) */
+[data-testid="stSidebar"] .stButton>button {
+    background-color: transparent;
+    color: #333333 !important;
+    border: none;
+    text-align: left;
+    padding-left: 0;
+    box-shadow: none;
+}
+
+[data-testid="stSidebar"] .stButton>button:hover {
+    color: #0066ff !important;
+    background-color: #f0f7ff;
+}
+
+[data-testid="stSidebar"] .stButton>button:focus {
+    color: #0066ff !important;
+    box-shadow: none;
+}
+
+/* Headers with Purple Accent */
+h1,
+h2,
+h3 {
+    border-bottom: 2px solid transparent;
+}
+
+h2 {
+    border-image: linear-gradient(to right, #d900ff, #ffffff) 1;
+    border-bottom: 2px solid;
+    padding-bottom: 5px;
+    margin-bottom: 20px;
 }
