@@ -98,6 +98,21 @@ def jump_to_lesson(idx):
     st.session_state.current_lesson_index = idx
     save_state()
 
+# --- CONTENT DATA ---
+# UPDATE THIS SECTION WITH YOUR ACTUAL LINKS
+LESSON_DETAILS = {
+    "Lesson 1: The 70-Year AI Rollercoaster – Origins to Explosion": {
+        "video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ", # Replace with actual URL
+        "slides": "#", # Replace with PDF link or delete if none
+        "desc": "Understanding the history of AI."
+    },
+    "Lesson 2: Digital Self-Defense & Data Hygiene": {
+        "video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ", 
+        "slides": "#"
+    },
+    # Add more lessons here as needed...
+}
+
 # --- UI LAYOUT ---
 # Create two columns to mimic the "Card" layout
 left_col, right_col = st.columns([1, 2], gap="large")
@@ -154,15 +169,26 @@ with right_col:
     st.markdown(f"## {current_lesson['module']}")
     st.markdown(f"# {current_lesson['title']}")
     
-    # Video Placeholder
-    st.video("https://www.youtube.com/watch?v=dQw4w9WgXcQ") # Rick roll placeholder - PLEASE REPLACE
+    # Get details for this lesson
+    details = LESSON_DETAILS.get(current_lesson['title'], {})
+    video_url = details.get("video", "https://www.youtube.com/watch?v=dQw4w9WgXcQ") # Default fallback
+    slides_url = details.get("slides", "#")
+    description = details.get("desc", "")
+
+    # Video Player
+    st.video(video_url)
     
-    st.info("ℹ️ This is a placeholder video. Please replace with actual course content.")
+    if description:
+        st.markdown(description)
     
     st.markdown("### Lesson Resources")
-    st.markdown("- [Slide Deck (PDF)](#)")
-    st.markdown("- [Reference Link](#)")
+    if slides_url != "#":
+        st.markdown(f"- [📥 Download Slides / Resources]({slides_url})")
+    else:
+        st.markdown("_No resources attached for this lesson._")
     
+    st.markdown("---")
+
     if st.button("✅ Mark as Complete", key="complete_btn"):
         complete_lesson()
         st.success("Lesson Marked as Complete!")
